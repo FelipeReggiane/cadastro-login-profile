@@ -12,7 +12,6 @@ app.use(router);
 
 // catch all
 app.use((error: any, req: Request, res: Response, next: NextFunction) => {
-  console.log("middleware error");
   res.status(error.status || 500);
   res.json({ error: error.message });
 });

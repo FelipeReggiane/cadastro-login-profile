@@ -1,5 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 import * as yup from "yup";
+import jwt, { JwtPayload } from "jsonwebtoken";
+import repository from "../repositiories/repository";
 
 const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
@@ -37,7 +39,7 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
       password: yup
         .string()
         .matches(
-          /^(?=.*[A-Za-z])(?=.*\d)(?=.*[@$!%*#?&])[A-Za-z\d@$!%*#?&]{8,}$/,
+          /^.*(?=.{8,})((?=.*[!@#$%^&*()\-_=+{};:,<.>]){1})(?=.*\d)((?=.*[a-z]){1})((?=.*[A-Z]){1}).*$/,
           "Password must Contain 8 Characters, One Uppercase, One Lowercase, One Number and one special case Character"
         ),
     });
@@ -51,4 +53,28 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-export default { createUser, loginUser };
+const profile = async (req: Request, res: Response, next: NextFunction) => {
+  let token = req.headers.authorization;
+  token ? (token = token.split(" ")[1]) : "";
+  if (!token) {
+    const error = {
+      message: "Invalid token",
+      status: 401,
+    };
+    next(error);
+  } else {
+    try {
+      const decoded: any = jwt.decode(token);
+      const userDB = await repository.findUserByEmail(decoded.email, next);
+      const verify = jwt.verify(token, userDB.password);
+      res.locals.email = userDB.email;
+      next();
+    } catch (error: any) {
+      error.message = "Invalid token";
+      error.status = 401;
+      next(error);
+    }
+  }
+};
+
+export default { createUser, loginUser, profile };

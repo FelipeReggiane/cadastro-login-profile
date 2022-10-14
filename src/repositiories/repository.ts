@@ -1,5 +1,4 @@
 import { NextFunction } from "express";
-import { updateWhile } from "typescript";
 import config from "../../knexfile";
 
 const knex = require("knex")(config);
@@ -19,9 +18,8 @@ async function createUserDB(
     const newUser = await knex("users").insert({ name, email, password });
     return await newUser;
   } catch (error: any) {
-    console.log({ error: error.message });
     if (error.code === "ER_DUP_ENTRY") {
-      error.message = "This email is already in use, please choose other";
+      error.message = "Email provided already exists";
       error.status = 409;
       next(error);
     }
@@ -40,9 +38,7 @@ async function findUserDB(
   try {
     const { email, password } = user;
     const userDB = await knex("users").where({ email }).first();
-    console.log({ userDB });
     if (!userDB) {
-      console.log("entrou if");
       const error = {
         message: "Email or password invalid",
         status: 401,
@@ -51,9 +47,48 @@ async function findUserDB(
     }
     return userDB;
   } catch (error) {
-    console.log("entrou catch");
     next(error);
   }
 }
 
-export default { createUserDB, findUserDB };
+async function findUserByEmail(email: string, next: NextFunction) {
+  try {
+    const userDB = await knex("users").where({ email }).first();
+    if (!userDB) {
+      const error = {
+        message: "Internal server error",
+        status: 500,
+      };
+      throw error;
+    }
+    return userDB;
+  } catch (error) {
+    next(error);
+  }
+}
+
+async function findProfileByEmail(email: string, next: NextFunction) {
+  try {
+    const userDB = await knex("users")
+      .select("name", "email")
+      .where({ email })
+      .first();
+    if (!userDB) {
+      const error = {
+        message: "Internal server error",
+        status: 500,
+      };
+      throw error;
+    }
+    return userDB;
+  } catch (error) {
+    next(error);
+  }
+}
+
+export default {
+  createUserDB,
+  findUserDB,
+  findUserByEmail,
+  findProfileByEmail,
+};

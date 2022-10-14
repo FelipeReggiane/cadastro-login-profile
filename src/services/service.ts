@@ -1,6 +1,7 @@
 import { NextFunction } from "express";
 import repository from "../repositiories/repository";
 import bcrypt from "bcrypt";
+import jwt from "jsonwebtoken";
 
 const createUser = async (
   user: {
@@ -22,7 +23,6 @@ const createUser = async (
     const returnRepository = repository.createUserDB(user, next);
     return returnRepository;
   } catch (error: any) {
-    console.log({ error: error.message });
     error.status = 500;
     next(error);
   }
@@ -37,7 +37,6 @@ const loginUser = async (
 ) => {
   try {
     const userDB = await repository.findUserDB(user, next);
-    console.log("service", { userDB });
 
     const comparePassword = await bcrypt.compare(
       user.password,
@@ -49,11 +48,27 @@ const loginUser = async (
         status: 401,
       };
       return next(error);
+    } else {
+      var token = jwt.sign(
+        {
+          email: userDB.email,
+        },
+        userDB.password
+      );
+      return token;
     }
-    return comparePassword;
   } catch (error) {
     next(error);
   }
 };
 
-export default { createUser, loginUser };
+const profileUser = async (email: any, next: NextFunction) => {
+  try {
+    const userDB = await repository.findProfileByEmail(email, next);
+    return userDB;
+  } catch (error) {
+    next(error);
+  }
+};
+
+export default { createUser, loginUser, profileUser };

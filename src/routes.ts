@@ -6,3 +6,4 @@ export const router: Router = Router();
 
 router.post("/register", middleware.createUser, controller.createUser);
 router.post("/login", middleware.loginUser, controller.loginUser);
+router.get("/profile", middleware.profile, controller.profile);
