@@ -18,12 +18,8 @@ async function createUserDB(
     const newUser = await knex("users").insert({ name, email, password });
     return await newUser;
   } catch (error: any) {
-    if (error.code === "ER_DUP_ENTRY") {
-      error.message = "Email provided already exists";
-      error.status = 409;
-      next(error);
-    }
-    next(error);
+    throw error;
+    // next(error);
   }
 }
 

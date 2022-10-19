@@ -20,11 +20,19 @@ const createUser = async (
 
     user.password = cryptedPassword;
 
-    const returnRepository = repository.createUserDB(user, next);
+    const returnRepository = await repository.createUserDB(user, next);
     return returnRepository;
   } catch (error: any) {
-    error.status = 500;
-    next(error);
+    console.log("service", { error });
+    const err = { message: "Internal server errror", status: 500 };
+    if (error.code === "ER_DUP_ENTRY") {
+      err.message = "Email provided already exists";
+      err.status = 409;
+    }
+    throw err;
+    // error.status = 500;
+
+    // next(error);
   }
 };
 

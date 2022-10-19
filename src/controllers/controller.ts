@@ -13,9 +13,11 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     await service.createUser(user, next);
     return res.status(200).json({
-      message: "Usuário criado com sucesso",
+      message: "User registered successfully",
     });
   } catch (error) {
+    // console.log("controller", { error });
+
     return next(error);
   }
 };
