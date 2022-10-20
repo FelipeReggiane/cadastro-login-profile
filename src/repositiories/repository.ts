@@ -4,15 +4,12 @@ import config from "../../knexfile";
 const knex = require("knex")(config);
 
 // register
-async function createUserDB(
-  user: {
-    name: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-  },
-  next: NextFunction
-) {
+async function createUserDB(user: {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}) {
   try {
     const { name, email, password } = user;
     const newUser = await knex("users").insert({ name, email, password });
@@ -24,13 +21,7 @@ async function createUserDB(
 }
 
 // login
-async function findUserDB(
-  user: {
-    email: string;
-    password: string;
-  },
-  next: NextFunction
-) {
+async function findUserDB(user: { email: string; password: string }) {
   try {
     const { email, password } = user;
     const userDB = await knex("users").where({ email }).first();
@@ -41,13 +32,13 @@ async function findUserDB(
       };
       throw error;
     }
-    return userDB;
+    return await userDB;
   } catch (error) {
-    next(error);
+    throw error;
   }
 }
 
-async function findUserByEmail(email: string, next: NextFunction) {
+async function findUserByEmail(email: string) {
   try {
     const userDB = await knex("users").where({ email }).first();
     if (!userDB) {
@@ -59,11 +50,11 @@ async function findUserByEmail(email: string, next: NextFunction) {
     }
     return userDB;
   } catch (error) {
-    next(error);
+    throw error;
   }
 }
 
-async function findProfileByEmail(email: string, next: NextFunction) {
+async function findProfileByEmail(email: string) {
   try {
     const userDB = await knex("users")
       .select("name", "email")
@@ -78,7 +69,7 @@ async function findProfileByEmail(email: string, next: NextFunction) {
     }
     return userDB;
   } catch (error) {
-    next(error);
+    throw error;
   }
 }
 

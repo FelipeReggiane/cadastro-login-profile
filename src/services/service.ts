@@ -3,15 +3,12 @@ import repository from "../repositiories/repository";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 
-const createUser = async (
-  user: {
-    name: string;
-    email: string;
-    password: string;
-    confirmPassword: string;
-  },
-  next: NextFunction
-) => {
+const createUser = async (user: {
+  name: string;
+  email: string;
+  password: string;
+  confirmPassword: string;
+}) => {
   try {
     // Criptografando senha para mandar para o repository
     const saltRounds: number = parseInt(process.env.SALT_ROUNDS!);
@@ -20,42 +17,31 @@ const createUser = async (
 
     user.password = cryptedPassword;
 
-    const returnRepository = await repository.createUserDB(user, next);
+    const returnRepository = await repository.createUserDB(user);
     return returnRepository;
   } catch (error: any) {
-    console.log("service", { error });
     const err = { message: "Internal server errror", status: 500 };
     if (error.code === "ER_DUP_ENTRY") {
       err.message = "Email provided already exists";
       err.status = 409;
     }
     throw err;
-    // error.status = 500;
-
-    // next(error);
   }
 };
 
-const loginUser = async (
-  user: {
-    email: string;
-    password: string;
-  },
-  next: NextFunction
-) => {
+const loginUser = async (user: { email: string; password: string }) => {
   try {
-    const userDB = await repository.findUserDB(user, next);
-
+    const userDB = await repository.findUserDB(user);
     const comparePassword = await bcrypt.compare(
       user.password,
       userDB.password
     );
     if (!comparePassword) {
-      const error = {
+      const err = {
         message: "Email or password invalid",
         status: 401,
       };
-      return next(error);
+      throw err;
     } else {
       var token = jwt.sign(
         {
@@ -65,17 +51,24 @@ const loginUser = async (
       );
       return token;
     }
-  } catch (error) {
-    next(error);
+  } catch (error: any) {
+    if (error.status === 401) {
+      const err = {
+        message: "Email or password invalid",
+        status: 401,
+      };
+      throw err;
+    }
+    throw error;
   }
 };
 
-const profileUser = async (email: any, next: NextFunction) => {
+const profileUser = async (email: any) => {
   try {
-    const userDB = await repository.findProfileByEmail(email, next);
+    const userDB = await repository.findProfileByEmail(email);
     return userDB;
   } catch (error) {
-    next(error);
+    throw error;
   }
 };
 

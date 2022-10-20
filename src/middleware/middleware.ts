@@ -65,7 +65,7 @@ const profile = async (req: Request, res: Response, next: NextFunction) => {
   } else {
     try {
       const decoded: any = jwt.decode(token);
-      const userDB = await repository.findUserByEmail(decoded.email, next);
+      const userDB = await repository.findUserByEmail(decoded.email);
       const verify = jwt.verify(token, userDB.password);
       res.locals.email = userDB.email;
       next();

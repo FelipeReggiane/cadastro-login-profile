@@ -11,13 +11,11 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
     return next(error);
   }
   try {
-    await service.createUser(user, next);
+    await service.createUser(user);
     return res.status(200).json({
       message: "User registered successfully",
     });
   } catch (error) {
-    // console.log("controller", { error });
-
     return next(error);
   }
 };
@@ -32,7 +30,7 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
     return next(error);
   }
   try {
-    const returnService = await service.loginUser(user, next);
+    const returnService = await service.loginUser(user);
 
     if (returnService) {
       return res.status(200).json({
@@ -47,7 +45,7 @@ const loginUser = async (req: Request, res: Response, next: NextFunction) => {
 
 const profile = async (req: Request, res: Response, next: NextFunction) => {
   try {
-    const returnService = await service.profileUser(res.locals.email, next);
+    const returnService = await service.profileUser(res.locals.email);
     return res.status(200).json(returnService);
   } catch (error) {
     next(error);
