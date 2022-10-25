@@ -1,4 +1,3 @@
-import { NextFunction } from "express";
 import config from "../../knexfile";
 
 const knex = require("knex")(config);
@@ -16,7 +15,6 @@ async function createUserDB(user: {
     return await newUser;
   } catch (error: any) {
     throw error;
-    // next(error);
   }
 }
 
@@ -38,6 +36,7 @@ async function findUserDB(user: { email: string; password: string }) {
   }
 }
 
+// middleware to profile
 async function findUserByEmail(email: string) {
   try {
     const userDB = await knex("users").where({ email }).first();
@@ -54,6 +53,7 @@ async function findUserByEmail(email: string) {
   }
 }
 
+// profile
 async function findProfileByEmail(email: string) {
   try {
     const userDB = await knex("users")
