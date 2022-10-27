@@ -1,4 +1,3 @@
-import { NextFunction } from "express";
 import repository from "../repositiories/repository";
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
@@ -20,7 +19,11 @@ const createUser = async (user: {
     const returnRepository = await repository.createUserDB(user);
     return returnRepository;
   } catch (error: any) {
-    const err = { message: "Internal server errror", status: 500 };
+    const err = {
+      message: "Internal server error",
+      status: 500,
+      stack: error.stack,
+    };
     if (error.code === "ER_DUP_ENTRY") {
       err.message = "Email provided already exists";
       err.status = 409;
