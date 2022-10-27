@@ -8,6 +8,7 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
       message: "Could not find data in request",
       status: 500,
     };
+    console.log({ error });
     return next(error);
   }
   try {

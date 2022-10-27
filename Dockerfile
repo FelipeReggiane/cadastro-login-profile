@@ -16,9 +16,11 @@ ARG DATABASE
 ENV DATABASE=$DATABASE
 
 COPY package*.json ./
+
+RUN npm ci
+
 COPY . .
 
-RUN npm install
 
 EXPOSE 3001
 

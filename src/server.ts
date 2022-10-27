@@ -1,4 +1,4 @@
-import express, { Request, Response } from "express";
+import express, { NextFunction, Request, Response } from "express";
 import { router } from "./routes";
 import * as dotenv from "dotenv";
 
@@ -15,9 +15,15 @@ app.get("/", (req, res) => {
 });
 
 // catch all
-app.use((error: any, req: Request, res: Response) => {
+app.use((error: any, req: Request, res: Response, next: NextFunction) => {
   res.status(error.status || 500);
-  res.json({ error: error.message, stack: error.stack });
+  const err: any = {
+    error: error.message,
+  };
+  if (error.status === 500) {
+    err.stack = error.stack;
+  }
+  res.json(err);
 });
 
 export default app;
