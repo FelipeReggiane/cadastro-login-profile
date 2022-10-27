@@ -12,13 +12,14 @@ services:
       context: .
       dockerfile: Dockerfile
       args:
-        - SALT_ROUNDS=10
         - CLIENT=mysql
         - HOST=data_base
         - PORT=3306
         - USER=user
         - PASSWORD=password
         - DATABASE=db
+    environment:
+      SALT_ROUNDS: 10
     networks:
       - network
     depends_on:

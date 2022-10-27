@@ -4,9 +4,8 @@
   "description": "cadastro-login-profile",
   "main": "index.ts",
   "scripts": {
-    "start": "nodemon src/index.ts",
-    "test": "jest --watch",
-    "postinstall": "knex migrate:latest"
+    "start": "knex migrate:latest && nodemon src/index.ts",
+    "test": "jest --watch"
   },
   "author": "Felipe Reggiane Costa",
   "license": "MIT",
