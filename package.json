@@ -4,7 +4,7 @@
   "description": "cadastro-login-profile",
   "main": "index.ts",
   "scripts": {
-    "start": "knex migrate:latest && nodemon src/index.ts",
+    "start": "knex migrate:latest && nodemon -L src/index.ts",
     "test": "jest --watch"
   },
   "author": "Felipe Reggiane Costa",

@@ -21,6 +21,8 @@ describe("Testing routes of api", () => {
         },
       });
     expect(res.statusCode).toEqual(200);
+    console.log({ response: res.body });
+    expect(res).toHaveProperty("body");
   });
 
   it("register route erro duplicated email", async () => {
